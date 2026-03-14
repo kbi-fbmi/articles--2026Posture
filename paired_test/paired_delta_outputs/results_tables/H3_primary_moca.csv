@@ -1,0 +1,2 @@
+model,n,formula,term,beta,se,p,ci_low,ci_high
+H3_primary_moca,94,delta_tcc_cog ~ moca + age_0 + sex_bin,moca,-0.1553605031089708,0.11215722422879643,0.1659904591524599,-0.37518462320339496,0.06446361698545336

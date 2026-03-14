@@ -1,0 +1,2 @@
+status,n_clustered,features,best_k,silhouette
+ok,97,"['delta_tcc_cog', 'delta_ucc_walk_stand', 'delta_pisa_walk_rest', 'delta_ucc_walk_rest', 'delta_tcc_walk_rest', 'delta_back_walk_rest']",3,0.16591522116349394

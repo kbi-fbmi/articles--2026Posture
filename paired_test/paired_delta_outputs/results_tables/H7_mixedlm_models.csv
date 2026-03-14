@@ -1,0 +1,9 @@
+metric,model,formula,n_obs,n_groups,llf,aic,bic,converged,status
+back,A_timeXcond_plus_group,value ~ C(time) * C(condition) + C(group) + age_0 + sex_bin,398,100,-492.36941142654905,1004.7388228530981,1044.6033429059426,True,ok
+back,B_timeXcondXgroup,value ~ C(time) * C(condition) * C(group) + age_0 + sex_bin,398,100,-490.8781529616999,1013.7563059233999,1077.5395380079508,True,ok
+pisa,A_timeXcond_plus_group,value ~ C(time) * C(condition) + C(group) + age_0 + sex_bin,397,100,-445.6951399055763,911.3902798111526,951.2296426180245,True,ok
+pisa,B_timeXcondXgroup,value ~ C(time) * C(condition) * C(group) + age_0 + sex_bin,397,100,-444.505353828358,921.010707656716,984.753688147711,True,ok
+tcc,A_timeXcond_plus_group,value ~ C(time) * C(condition) + C(group) + age_0 + sex_bin,595,100,-1441.3026051957033,2906.6052103914067,2959.2679472579543,True,ok
+tcc,B_timeXcondXgroup,value ~ C(time) * C(condition) * C(group) + age_0 + sex_bin,595,100,-1439.5421739216165,2923.084347843233,3019.632698765237,True,ok
+ucc,A_timeXcond_plus_group,value ~ C(time) * C(condition) + C(group) + age_0 + sex_bin,594,100,-1640.4391931751193,3304.8783863502385,3357.5209381825903,True,ok
+ucc,B_timeXcondXgroup,value ~ C(time) * C(condition) * C(group) + age_0 + sex_bin,594,100,-1637.5443783615356,3319.088756723071,3415.6001017490494,True,ok

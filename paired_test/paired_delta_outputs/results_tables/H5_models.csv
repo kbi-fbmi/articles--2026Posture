@@ -1,0 +1,2 @@
+model,n,formula,factor,n_terms,stat,df_num,df_denom,p,test
+H5_sex_x_group_on_delta_ucc,98,delta_ucc_walk_stand ~ C(group) * sex_bin + age_0,C(group):sex_bin,2,0.6555793054068388,2.0,2.0,0.7205145620567561,Wald

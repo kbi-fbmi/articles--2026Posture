@@ -1,0 +1,4 @@
+model,formula,n,r2
+H1:delta_tcc_cog_on_pre_rest_tcc,delta_tcc_cog ~ pre_rest_tcc + age_0 + sex_bin,99,0.001594774826404577
+H1:delta_ucc_walk_stand_on_pre_stand_ucc,delta_ucc_walk_stand ~ pre_stand_ucc + age_0 + sex_bin,98,0.19647453044263252
+H1:delta_pisa_walk_rest_on_pre_rest_pisa,delta_pisa_walk_rest ~ pre_rest_pisa + age_0 + sex_bin,100,0.03248582211490336

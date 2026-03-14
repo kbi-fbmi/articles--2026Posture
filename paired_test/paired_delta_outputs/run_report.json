@@ -1,0 +1,24 @@
+{
+  "outputs_dir": "d:\\mprgs\\!VSC\\articles--2026Posture\\paired_test\\paired_delta_outputs",
+  "input_csv": "d:\\mprgs\\!VSC\\articles--2026Posture\\paired_test\\Final_data_frame_filtered_enrollment_pdg_merged_fes_merged_P-N_duration.csv",
+  "derived_dataset_path": "d:\\mprgs\\!VSC\\articles--2026Posture\\paired_test\\paired_delta_outputs\\derived_dataset_with_deltas.csv",
+  "n_subjects": 100,
+  "group_counts": {
+    "TD": 51,
+    "PIGD": 32,
+    "PD_UNCLASSIFIED": 17
+  },
+  "primary_endpoints": [
+    "delta_tcc_cog",
+    "delta_ucc_walk_stand",
+    "delta_pisa_walk_rest"
+  ],
+  "delta_features_for_H8": [
+    "delta_tcc_cog",
+    "delta_ucc_walk_stand",
+    "delta_pisa_walk_rest",
+    "delta_ucc_walk_rest",
+    "delta_tcc_walk_rest",
+    "delta_back_walk_rest"
+  ]
+}

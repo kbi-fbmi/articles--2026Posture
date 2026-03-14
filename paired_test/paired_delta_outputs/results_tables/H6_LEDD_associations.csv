@@ -1,0 +1,3 @@
+outcome,n,formula,term,beta,se,p,ci_low,ci_high,q,reject_fdr
+delta_ucc_walk_stand,89,delta_ucc_walk_stand ~ levodopa_equivalent + duration_pd + age_0 + sex_bin,levodopa_equivalent,-0.0014701742216829867,0.0009157191958545698,0.10838692228815694,-0.0032649508655099233,0.00032460242214395,0.15798440359539434,False
+delta_pisa_walk_rest,91,delta_pisa_walk_rest ~ levodopa_equivalent + duration_pd + age_0 + sex_bin,levodopa_equivalent,0.0001488620786118589,0.00010543513510479893,0.15798440359539434,-5.7786988898661735e-05,0.00035551114612237953,0.15798440359539434,False

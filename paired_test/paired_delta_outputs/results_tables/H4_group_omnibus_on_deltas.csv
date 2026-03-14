@@ -1,0 +1,4 @@
+outcome,n,formula,factor,n_terms,stat,df_num,df_denom,p,test,q,reject_fdr
+delta_tcc_cog,99,delta_tcc_cog ~ C(group) + age_0 + sex_bin,C(group),2,1.6915329481195964,2.0,2.0,0.4292282397849557,Wald,0.6438423596774336,False
+delta_ucc_walk_stand,98,delta_ucc_walk_stand ~ C(group) + age_0 + sex_bin,C(group),2,5.163548565951666,2.0,2.0,0.07563967869830424,Wald,0.2269190360949127,False
+delta_pisa_walk_rest,100,delta_pisa_walk_rest ~ C(group) + age_0 + sex_bin,C(group),2,0.5385946923378444,2.0,2.0,0.7639160743560415,Wald,0.7639160743560415,False

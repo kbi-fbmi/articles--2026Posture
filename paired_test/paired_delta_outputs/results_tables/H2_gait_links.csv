@@ -1,0 +1,7 @@
+test,outcome,predictor,n,rho,p,beta,se,ci_low,ci_high,formula,q,reject_fdr
+spearman,delta_ucc_walk_stand,w_ex_time_meanP1P2,90,0.06867514507963945,0.5201186599992706,,,,,,0.5643997676776434,False
+ols_HC3,delta_ucc_walk_stand,w_ex_time_meanP1P2,90,,0.26865478306696244,0.13312612189552264,0.12034916245478944,-0.10275390208542473,0.36900614587647,delta_ucc_walk_stand ~ w_ex_time_meanP1P2 + age_0 + sex_bin,0.5643997676776434,False
+spearman,delta_ucc_walk_stand,time_meanP_meanN,90,0.11421163106556365,0.28377712731338084,,,,,,0.5643997676776434,False
+ols_HC3,delta_ucc_walk_stand,time_meanP_meanN,90,,0.2816108404673071,0.25857937403048,0.24015743312399723,-0.2121205455121412,0.7292792935731012,delta_ucc_walk_stand ~ time_meanP_meanN + age_0 + sex_bin,0.5643997676776434,False
+spearman,delta_pisa_walk_rest,w_ex_time_meanP1P2,91,-0.06120401337792643,0.5643997676776434,,,,,,0.5643997676776434,False
+ols_HC3,delta_pisa_walk_rest,w_ex_time_meanP1P2,91,,0.5254202240300699,-0.007786182589559028,0.012261462358242027,-0.03181820720950696,0.016245842030388903,delta_pisa_walk_rest ~ w_ex_time_meanP1P2 + age_0 + sex_bin,0.5643997676776434,False
