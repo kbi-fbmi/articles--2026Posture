@@ -239,7 +239,7 @@ def omnibus_wald_for_prefix(res, term_prefix: str) -> Dict:
         R[i, names.index(t)] = 1.0
 
     w = res.wald_test(R)
-    stat = float(np.atleast_1d(w.statistic)[0])
+    stat = float(np.asarray(w.statistic).squeeze())
     df_num = float(getattr(w, "df_num", len(terms)))
     df_denom = float(getattr(w, "df_denom", np.nan))
     p = float(w.pvalue)
@@ -658,7 +658,7 @@ def main() -> None:
             omni_inter = {
                 "factor": f"C({cfg.group_col}):sex_bin",
                 "n_terms": int(len(inter_terms)),
-                "stat": float(np.atleast_1d(w.statistic)[0]),
+                "stat": float(np.asarray(w.statistic).squeeze()),
                 "df_num": float(getattr(w, "df_num", len(inter_terms))),
                 "df_denom": float(getattr(w, "df_denom", np.nan)),
                 "p": float(w.pvalue),
