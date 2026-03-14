@@ -1,0 +1,448 @@
+Computational analysis pipeline: detailed implementation mapping
+Sofia Rebiha Decesaro - Mars 2026. 
+
+
+All analyses described in the Methods were implemented in a single reproducible Python pipeline (paired_hypotheses_pipeline.py). The script orchestrates data validation, Δ-variable construction, hypothesis testing (H1–H8), figure generation, and export of all intermediate datasets and results tables.
+
+The pipeline strictly follows the Δ-focused framework described in the Methods section of the manuscript.
+
+Below we document the exact code components implementing each methodological step.
+
+1. Command-line interface and configuration
+
+The pipeline is executed through a command-line interface defined in the function:
+
+def parse_args():
+
+
+This function uses:
+
+argparse.ArgumentParser
+
+
+to define the required input dataset and optional output directory.
+
+Example usage:
+
+python pd_posture_delta_pipeline.py --csv dataset.csv
+
+
+The configuration of dataset structure is encapsulated in the Config dataclass:
+
+@dataclass
+class Config:
+
+
+This object defines:
+
+required columns
+
+posture variable patterns
+
+statistical thresholds
+
+output parameters
+
+Important configuration elements include:
+
+id_col = "study_id"
+group_col = "group"
+sex_col = "pohlavi"
+age_col = "age_0"
+
+
+and the list of primary posture variables required for Δ endpoints:
+
+posture_cols_required_for_primary_deltas = (
+    "pre_rest_tcc",
+    "pre_cog_tcc",
+    "pre_stand_ucc",
+    "post_stand_ucc",
+    "pre_rest_pisa",
+    "post_rest_pisa"
+)
+
+
+This ensures the pipeline fails immediately if any required variable is missing.
+
+2. Data validation and preprocessing
+
+The dataset is loaded with:
+
+df = pd.read_csv(cfg.csv_path)
+
+
+Several validation functions enforce data integrity.
+
+Column validation
+
+The function
+
+require_cols(df, columns)
+
+
+checks that all required variables exist. If not, the code raises:
+
+raise KeyError("Missing required columns")
+
+Unique subject identifiers
+
+Duplicate IDs are detected via:
+
+if df[cfg.id_col].duplicated().any():
+    raise ValueError(...)
+
+
+This ensures all analyses operate at the subject level, as described in the manuscript.
+
+Numeric coercion
+
+The function
+
+coerce_numeric(df, cols)
+
+
+uses:
+
+pd.to_numeric(errors="coerce")
+
+
+to convert variables to numeric types while preserving missing values.
+
+Column name sanitization
+
+To ensure compatibility with the formula system used by Statsmodels, the pipeline renames problematic columns via:
+
+sanitize_columns_for_patsy(df)
+
+
+which replaces characters such as -, /, and spaces with underscores.
+
+3. Construction of Δ posture endpoints
+
+The primary analytic variables are constructed explicitly in the following section:
+
+df["delta_tcc_cog"] = df["pre_cog_tcc"] - df["pre_rest_tcc"]
+df["delta_ucc_walk_stand"] = df["post_stand_ucc"] - df["pre_stand_ucc"]
+df["delta_pisa_walk_rest"] = df["post_rest_pisa"] - df["pre_rest_pisa"]
+
+
+These definitions match exactly the endpoint definitions described in the Methods section.
+
+Additional optional Δ variables are constructed through the helper function:
+
+add_delta_if_exists(new, a, b)
+
+
+which conditionally creates variables such as:
+
+delta_ucc_walk_rest
+delta_tcc_walk_rest
+delta_back_walk_rest
+
+
+These variables are used exclusively for exploratory clustering.
+
+4. Quality-control summary statistics
+
+To demonstrate that posture variables are analyzed as raw angular values without normalization, the code computes descriptive statistics using:
+
+describe_series()
+
+
+and exports them as:
+
+QC_posture_summary_stats.csv
+
+
+This step confirms the methodological statement that no scaling or sign inversion was applied to posture variables.
+
+5. Primary paired Δ tests
+
+The primary hypothesis tests are implemented in a loop over the three Δ endpoints:
+
+for dcol in primary_endpoints:
+
+
+For each endpoint, the following procedure is executed.
+
+Normality testing
+
+Normality is evaluated using:
+
+stats.shapiro(d_nonan)
+
+
+If the Shapiro–Wilk p-value is < 0.05, the pipeline selects a nonparametric test.
+
+Wilcoxon signed-rank test
+
+Implemented with:
+
+stats.wilcoxon(d_nonan, zero_method="wilcox")
+
+One-sample t-test
+
+If the distribution is normal, the code uses:
+
+stats.ttest_1samp(d_nonan, popmean=0.0)
+
+Effect size calculations
+
+Effect sizes are computed using custom helper functions:
+
+For Wilcoxon:
+
+rank_biserial_from_wilcoxon(delta)
+
+
+For t-tests:
+
+cohen_dz_paired(delta)
+
+Multiple testing correction
+
+False discovery rate correction is applied using:
+
+multipletests(method="fdr_bh")
+
+
+within the function:
+
+bh_fdr()
+
+
+This correction is applied only across the three primary endpoints, exactly matching the methodological specification.
+
+6. Baseline vulnerability models (H1)
+
+Regression models are fitted using Statsmodels' formula interface.
+
+The helper function
+
+fit_ols(formula, df, cov_type="HC3")
+
+
+internally calls:
+
+smf.ols(formula, data=df).fit(cov_type="HC3")
+
+
+which implements ordinary least squares with heteroskedasticity-consistent robust standard errors.
+
+The formulas used are:
+
+delta_tcc_cog ~ pre_rest_tcc + age + sex
+delta_ucc_walk_stand ~ pre_stand_ucc + age + sex
+delta_pisa_walk_rest ~ pre_rest_pisa + age + sex
+
+
+Coefficient extraction is handled by:
+
+extract_term(res, term)
+
+
+which retrieves:
+
+beta
+standard error
+p value
+confidence interval
+
+
+FDR correction is applied only to the baseline posture terms.
+
+7. Gait–posture associations (H2)
+
+Two types of association tests are performed.
+
+Spearman correlations
+
+Computed with:
+
+stats.spearmanr(x, y)
+
+Adjusted regression models
+
+Fitted using:
+
+smf.ols(formula).fit(cov_type="HC3")
+
+
+Example model:
+
+delta_ucc_walk_stand ~ gait_metric + age + sex
+
+
+All p-values from these analyses are collected and subjected to Benjamini–Hochberg correction.
+
+8. Cognitive moderation models (H3)
+
+The primary cognitive predictor (MoCA) is tested using:
+
+delta_tcc_cog ~ moca + age + sex
+
+
+Secondary cognitive predictors are tested individually using the same regression structure.
+
+Each model is fitted through:
+
+fit_ols()
+
+
+Secondary models undergo FDR correction within the cognitive family.
+
+9. Phenotype moderation (H4)
+
+Phenotype effects are tested via ANCOVA models.
+
+The regression formula is:
+
+delta ~ C(group) + age + sex
+
+
+The C() operator in the formula instructs Statsmodels to treat the phenotype variable as a categorical factor.
+
+Group effects are evaluated using a custom function:
+
+omnibus_wald_for_prefix(res, "C(group)")
+
+
+This function constructs a contrast matrix and calls:
+
+res.wald_test(R)
+
+
+to compute an omnibus Wald test for the phenotype factor.
+
+10. Sex × phenotype interaction (H5)
+
+Interaction models are specified using:
+
+delta_ucc_walk_stand ~ C(group) * sex + age
+
+
+The * operator expands to:
+
+main effects + interaction
+
+
+Interaction terms are extracted and evaluated using Wald tests constructed from the model coefficient vector.
+
+11. Medication burden models (H6)
+
+Associations between LEDD and Δ posture outcomes are tested using regression models of the form:
+
+delta_outcome ~ levodopa_equivalent + duration_pd + age + sex
+
+
+Models are fitted using:
+
+smf.ols(...).fit(cov_type="HC3")
+
+
+and subjected to FDR correction across tested outcomes.
+
+12. Mixed-effects robustness analysis (H7)
+
+Repeated-measures posture data are reshaped using:
+
+df.melt()
+
+
+to convert wide posture variables into long format.
+
+Posture components are parsed using a regular expression:
+
+^(pre|post)_(rest|stand|cog)_(tcc|ucc|pisa|back)$
+
+
+Mixed-effects models are fitted using:
+
+sm.MixedLM.from_formula()
+
+
+Example model:
+
+value ~ C(time) * C(condition) + C(group) + age + sex
+
+
+Random effects structure:
+
+random intercept for subject
+
+
+Models are estimated via:
+
+md.fit(reml=False, method="lbfgs")
+
+
+Model diagnostics (AIC, BIC, convergence) are exported.
+
+13. Exploratory clustering (H8)
+
+Responder clustering is implemented using Scikit-learn.
+
+Feature preparation
+
+Δ features are extracted and rows with missing values are removed:
+
+X = df[delta_features].dropna()
+
+Standardization
+
+Features are standardized using:
+
+StandardScaler().fit_transform(X)
+
+K-means clustering
+
+Clustering is performed using:
+
+KMeans(n_clusters=k, n_init=50, random_state=42)
+
+Cluster selection
+
+The optimal number of clusters is chosen based on the silhouette score:
+
+silhouette_score(Xz, labels)
+
+
+The algorithm evaluates:
+
+k = 2,3,4,5
+
+
+and selects the solution with the highest silhouette value.
+
+14. Reproducibility outputs
+
+The pipeline automatically exports:
+
+derived_dataset_with_deltas.csv
+results_tables/*.csv
+figures/*.png
+metadata.json
+run_report.json
+
+
+The final execution report is generated using:
+
+save_json(run_report)
+
+
+This file documents:
+
+input dataset
+
+output directory
+
+number of subjects
+
+cluster features
+
+primary endpoints
+
+Conclusion: 
+All statistical analyses were implemented in a fully reproducible Python pipeline that performs dataset validation, construction of pre-specified Δ posture variables, and hypothesis-driven statistical modeling (paired tests, robust OLS regression, ANCOVA, mixed-effects modeling, and exploratory clustering). Each model corresponds to a pre-registered hypothesis (H1–H8), and multiple testing correction is applied within defined hypothesis families using the Benjamini–Hochberg procedure.
+
